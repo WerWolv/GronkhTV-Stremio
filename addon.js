@@ -70,25 +70,25 @@ builder.defineMetaHandler(async ({ type, id, extra }) => {
         const res = await fetch(url)
         const data = await res.json()
 
-        let description = "Spiele: ";
+        let games = [];
         for (let chapter of data.chapters) {
-            if (chapter.title === "Just Chatting")
-                continue;
-            description += `${chapter.title}, `
+            games.push(chapter.title);
         }
 
-        description = description.substring(0, description.length - 2)
+        games = [... new Set(games)]
 
         return {
             meta: {
                 id: id,
                 type: "series",
                 name: `[${data.episode}] ${data.title.split(" - ")[1]}`,
+                title: `[${data.episode}] ${data.title.split(" - ")[1]}`,
                 poster: data.preview_url,
                 posterShape: "landscape",
+                description: "",
                 background: data.preview_url,
-                description: description,
                 releaseInfo: new Date(data.created_at).toLocaleDateString("de-DE"),
+                genres: games
             }
         }
     } catch (err) {
@@ -113,8 +113,8 @@ builder.defineStreamHandler(async ({type, id}) => {
             return {
                 streams: [
                     {
-                        title: `GronkhTV - episode ${episode}`,
-                        name: episode,
+                        name: "Stream",
+                        description: `#${episode}`,
                         url: json.playlist_url
                     }
                 ]
